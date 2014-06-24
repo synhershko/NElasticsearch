@@ -14,8 +14,6 @@ namespace NElasticsearch.Models
         public ShardStatistics _shards { get; set; }
         public Hits<T> hits { get; set; }
 
-        //public JValue error;
-        public HttpStatusCode status { get; set; }
-        //public JObject facets;
+        public HttpStatusCode status { get; set; } // TODO always null
     }
 }
