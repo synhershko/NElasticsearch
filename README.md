@@ -7,7 +7,7 @@ An alternative Elasticsearch client for .NET, built on-the-go while working on r
 
 Yeah, there is an officially released (or, to be released) Elasticsearch client for .NET, and also several others out there, but I found them all not satisfactory for my requirements.
 
-This is a client library which is a result of multiple spikes I made while working on real-world project using Elasticsearch. I believe a consumer library written while dogfooding can shape up to be much 
+This is a client library which is a result of multiple spikes I made while working on real-world project using Elasticsearch. I believe a consumer library written while dogfooding can shape up to be much better to the developer using it.
 
 You can think of this as an experiment in consumer library deisn. I may either succeed in producing a highly-usable, high-performance client library for the popular Elasticsearch fame, or I may learn a lesson or two along the way. Either way, fun.
 
