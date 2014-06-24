@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace NElasticsearch.Models
@@ -16,6 +15,8 @@ namespace NElasticsearch.Models
         public double? _score { get; set; }
 
         public T _source { get; set; }
-        //public Dictionary<String, JToken> fields = new Dictionary<string, JToken>();
+        public Dictionary<string, IEnumerable<object>> fields = new Dictionary<string, IEnumerable<object>>();
+
+        public Dictionary<string, IEnumerable<string>> highlight;
     }
 }
