@@ -17,6 +17,6 @@ namespace NElasticsearch.Models
         public T _source { get; set; }
         public Dictionary<string, IEnumerable<object>> fields = new Dictionary<string, IEnumerable<object>>();
 
-        public Dictionary<string, IEnumerable<string>> highlight;
+        public Dictionary<string, List<string>> highlight { get; set; }
     }
 }
