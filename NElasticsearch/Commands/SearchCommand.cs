@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
 using NElasticsearch.Models;
 using RestSharp;
@@ -13,6 +14,8 @@ namespace NElasticsearch.Commands
             var response = client.Execute<SearchResponse<T>>(GetSearchRequest(query, indexName, typeName));
             if (response.StatusCode != HttpStatusCode.OK)
                 throw ElasticsearchException.CreateFromResponseBody(response.Content);
+            if (response.ErrorException != null)
+                throw new Exception("NElasticsearch internal error", response.ErrorException);
             return response.Data;
         }
 
@@ -22,6 +25,8 @@ namespace NElasticsearch.Commands
             var response = client.Execute(GetSearchRequest(query, indexName, typeName));
             if (response.StatusCode != HttpStatusCode.OK)
                 throw ElasticsearchException.CreateFromResponseBody(response.Content);
+            if (response.ErrorException != null)
+                throw new Exception("NElasticsearch internal error", response.ErrorException);
             return response.Content;
         }
 
