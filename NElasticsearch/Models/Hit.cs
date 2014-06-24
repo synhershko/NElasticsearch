@@ -15,7 +15,6 @@ namespace NElasticsearch.Models
         public double? _score { get; set; }
 
         public T _source { get; set; }
-        public Dictionary<string, IEnumerable<object>> fields = new Dictionary<string, IEnumerable<object>>();
 
         public Dictionary<string, List<string>> highlight { get; set; }
     }
