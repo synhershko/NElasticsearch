@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\SearchCommand.cs" />
+    <Compile Include="ElasticsearchException.cs" />
     <Compile Include="ElasticsearchRestClient.cs" />
     <Compile Include="Models\GetResponse.cs" />
     <Compile Include="Models\SearchResponse.cs" />

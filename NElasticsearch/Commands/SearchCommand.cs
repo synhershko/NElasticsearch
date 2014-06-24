@@ -11,9 +11,8 @@ namespace NElasticsearch.Commands
             object query, string indexName = null, string typeName = null) where T : new()
         {
             var response = client.Execute<SearchResponse<T>>(GetSearchRequest(query, indexName, typeName));
-            // TODO post-processing
             if (response.StatusCode != HttpStatusCode.OK)
-                return null;
+                throw ElasticsearchException.CreateFromResponseBody(response.Content);
             return response.Data;
         }
 
@@ -21,9 +20,8 @@ namespace NElasticsearch.Commands
             object query, string indexName = null, string typeName = null)
         {
             var response = client.Execute(GetSearchRequest(query, indexName, typeName));
-            // TODO post-processing
             if (response.StatusCode != HttpStatusCode.OK)
-                return null;
+                throw ElasticsearchException.CreateFromResponseBody(response.Content);
             return response.Content;
         }
 
