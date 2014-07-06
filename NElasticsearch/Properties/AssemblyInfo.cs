@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NElasticsearch")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("An alternative Elasticsearch client for .NET, built on-the-go while working on real-world projects")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Itamar Syn-Hershko")]
 [assembly: AssemblyProduct("NElasticsearch")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
