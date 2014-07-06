@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>NElasticsearch</title>
+    <authors>Itamar Syn-Hershko</authors>
+    <owners>Itamar Syn-Hershko</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+    <projectUrl>http://code972.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An alternative Elasticsearch client for .NET, built on-the-go while working on real-world projects</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>Elasticsearch Search Lucene</tags>
+  </metadata>
+</package>
