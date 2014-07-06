@@ -3,6 +3,12 @@ NElasticsearch
 
 An alternative Elasticsearch client for .NET, built on-the-go while working on real-world projects
 
+## Installation
+
+PM> Install-Package NElasticsearch
+
+See https://www.nuget.org/packages/NElasticsearch
+
 ## Why?
 
 Yeah, there is an officially released (or, to be released) Elasticsearch client for .NET, and also several others out there, but I found them all not satisfactory for my requirements.
