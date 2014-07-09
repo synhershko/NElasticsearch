@@ -6,6 +6,9 @@ using RestSharp;
 
 namespace NElasticsearch.Commands
 {
+    /// <summary>
+    /// See http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search.html
+    /// </summary>
     public static class SearchCommand
     {
         public static SearchResponse<T> Search<T>(this ElasticsearchRestClient client,

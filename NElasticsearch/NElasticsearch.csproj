@@ -44,8 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\AliasManagementCommands.cs" />
     <Compile Include="Commands\IndexManagementCommands.cs" />
+    <Compile Include="Commands\IndexSettingsCommands.cs" />
+    <Compile Include="Commands\MappingManagementCommands.cs" />
+    <Compile Include="Commands\MonitoringCommands.cs" />
+    <Compile Include="Commands\MultiDocumentCommands.cs" />
     <Compile Include="Commands\SearchCommand.cs" />
+    <Compile Include="Commands\SingleDocumentCommands.cs" />
     <Compile Include="ElasticsearchException.cs" />
     <Compile Include="ElasticsearchRestClient.cs" />
     <Compile Include="Models\GetResponse.cs" />
