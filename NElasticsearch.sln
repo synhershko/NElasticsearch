@@ -13,6 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3501AD
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NElasticsearch.Tests", "NElasticsearch.Tests\NElasticsearch.Tests.csproj", "{7DBC2C33-79C7-4EF1-9A56-54E89F4C8A48}"
+	ProjectSection(ProjectDependencies) = postProject
+		{08A771F5-787E-4089-8E7F-400B907F9426} = {08A771F5-787E-4089-8E7F-400B907F9426}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
