@@ -12,7 +12,7 @@ namespace NElasticsearch.Commands
         public static GetResponse<T> Get<T>(this ElasticsearchRestClient client,
             string id, string typeName, string indexName = null) where T : new()
         {
-            var request = new RestRequest(indexName ?? client.DefaultIndexName + "/" + typeName + "/{id}", Method.GET);
+            var request = new RestRequest((indexName ?? client.DefaultIndexName) + "/" + typeName + "/{id}", Method.GET);
             request.AddUrlSegment("id", id);
             request.RequestFormat = DataFormat.Json;
             var response = client.Execute<GetResponse<T>>(request);
