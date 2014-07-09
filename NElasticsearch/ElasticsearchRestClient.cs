@@ -12,16 +12,29 @@ namespace NElasticsearch
 {
     public class ElasticsearchRestClient
     {
-        private readonly RestClient _internalClient;
+        private readonly List<RestClient> _internalClients = new List<RestClient>();
+        private int currentClientId = 0;
 
-        public ElasticsearchRestClient(string elasticsearchUrl)
+        public ElasticsearchRestClient(params string[] elasticsearchUrls)
         {
-            _internalClient = new RestClient(elasticsearchUrl);
-            _internalClient.ClearHandlers();
-            _internalClient.AddHandler("application/json", new JsonDeserializer());
-            _internalClient.AddHandler("text/json", new JsonDeserializer());
-            _internalClient.AddHandler("text/x-json", new JsonDeserializer());
-            _internalClient.AddHandler("*", new JsonDeserializer());
+            foreach (var elasticsearchUrl in elasticsearchUrls)
+            {
+                var internalClient = new RestClient(elasticsearchUrl);
+                internalClient.ClearHandlers();
+                internalClient.AddHandler("application/json", new JsonDeserializer());
+                internalClient.AddHandler("text/json", new JsonDeserializer());
+                internalClient.AddHandler("text/x-json", new JsonDeserializer());
+                internalClient.AddHandler("*", new JsonDeserializer());
+                _internalClients.Add(internalClient);
+            }            
+        }
+
+        private RestClient GetRestClient()
+        {
+            var ret = _internalClients[currentClientId];
+            if (++currentClientId == _internalClients.Count)
+                currentClientId = 0;
+            return ret;
         }
 
         public RestRequestAsyncHandle ExecuteAsync(IRestRequest request, Action<IRestResponse, RestRequestAsyncHandle> callback)
@@ -36,17 +49,17 @@ namespace NElasticsearch
 
         public IRestResponse Execute(IRestRequest request)
         {
-            return _internalClient.Execute(request);
+            return GetRestClient().Execute(request);
         }
 
         public IRestResponse<T> Execute<T>(IRestRequest request) where T : new()
         {
-            return _internalClient.Execute<T>(request);
+            return GetRestClient().Execute<T>(request);
         }
 
         public Uri BuildUri(IRestRequest request)
         {
-            return _internalClient.BuildUri(request);
+            return GetRestClient().BuildUri(request);
         }
 
         public RestRequestAsyncHandle ExecuteAsyncGet(IRestRequest request, Action<IRestResponse, RestRequestAsyncHandle> callback, string httpMethod)
@@ -71,22 +84,22 @@ namespace NElasticsearch
 
         public IRestResponse ExecuteAsGet(IRestRequest request, string httpMethod)
         {
-            return _internalClient.ExecuteAsGet(request, httpMethod);
+            return GetRestClient().ExecuteAsGet(request, httpMethod);
         }
 
         public IRestResponse ExecuteAsPost(IRestRequest request, string httpMethod)
         {
-            return _internalClient.ExecuteAsPost(request, httpMethod);
+            return GetRestClient().ExecuteAsPost(request, httpMethod);
         }
 
         public IRestResponse<T> ExecuteAsGet<T>(IRestRequest request, string httpMethod) where T : new()
         {
-            return _internalClient.ExecuteAsGet<T>(request, httpMethod);
+            return GetRestClient().ExecuteAsGet<T>(request, httpMethod);
         }
 
         public IRestResponse<T> ExecuteAsPost<T>(IRestRequest request, string httpMethod) where T : new()
         {
-            return _internalClient.ExecuteAsPost<T>(request, httpMethod);
+            return GetRestClient().ExecuteAsPost<T>(request, httpMethod);
         }
 
         public Task<IRestResponse<T>> ExecuteTaskAsync<T>(IRestRequest request, CancellationToken token)
@@ -159,31 +172,6 @@ namespace NElasticsearch
         public X509CertificateCollection ClientCertificates { get; set; }
         public IWebProxy Proxy { get; set; }
 
-        public string DefaultIndexName { get; set; }
-        
-        public GetResponse<T> Get<T>(string id, string typeName, string indexName = null) where T : new()
-        {
-            var request = new RestRequest(indexName ?? DefaultIndexName + "/" + typeName + "/{id}", Method.GET);
-            request.AddUrlSegment("id", id);
-            request.RequestFormat = DataFormat.Json;
-            var response = Execute<GetResponse<T>>(request);
-            // TODO post-processing
-            if (response.StatusCode != HttpStatusCode.OK)
-                return null;
-            return response.Data;
-        }
-
-        public void Index<T>(T obj, string id, string typeName, string indexName = null)
-        {
-            var request =
-                new RestRequest((indexName ?? DefaultIndexName) + "/" + typeName +
-                                (!string.IsNullOrWhiteSpace(id) ? "/" + id : string.Empty), Method.POST);
-
-            
-            request.RequestFormat = DataFormat.Json;
-            request.AddBody(obj);
-            var response = Execute(request);
-            // TODO check status
-        }
+        public string DefaultIndexName { get; set; }                
     }
 }
