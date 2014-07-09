@@ -43,7 +43,17 @@ namespace NElasticsearch.Commands
                 throw response.ErrorException;
         }
 
-        // TODO Delete API
+        public static void Delete(this ElasticsearchRestClient client,
+            string id, string typeName, string indexName = null)
+        {
+            var request = new RestRequest((indexName ?? client.DefaultIndexName) + "/" + typeName + "/{id}", Method.DELETE);
+            request.AddUrlSegment("id", id);
+            request.RequestFormat = DataFormat.Json;
+            var response = client.Execute(request);
+            if (response.ErrorException != null)
+                throw response.ErrorException;            
+        }
+
         // TODO Update API
     }
 }
