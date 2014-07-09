@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using NElasticsearch.Models;
 using RestSharp;
 using RestSharp.Deserializers;
 
@@ -16,10 +16,16 @@ namespace NElasticsearch
         private int currentClientId = 0;
 
         public ElasticsearchRestClient(params string[] elasticsearchUrls)
+            : this(elasticsearchUrls.Select(x => new Uri(x)).ToArray())
+        {
+            
+        }
+
+        public ElasticsearchRestClient(params Uri[] elasticsearchUrls)
         {
             foreach (var elasticsearchUrl in elasticsearchUrls)
             {
-                var internalClient = new RestClient(elasticsearchUrl);
+                var internalClient = new RestClient(elasticsearchUrl.ToString());
                 internalClient.ClearHandlers();
                 internalClient.AddHandler("application/json", new JsonDeserializer());
                 internalClient.AddHandler("text/json", new JsonDeserializer());
