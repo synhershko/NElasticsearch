@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\AliasesManagementCommands.cs" />
     <Compile Include="Commands\AliasManagementCommands.cs" />
     <Compile Include="Commands\IndexManagementCommands.cs" />
     <Compile Include="Commands\IndexSettingsCommands.cs" />

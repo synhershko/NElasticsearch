@@ -80,5 +80,7 @@ namespace NElasticsearch.Commands
             request.AddBody(query);
             return request;
         }
+
+        // TODO routing support http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search.html#search-routing
     }
 }
