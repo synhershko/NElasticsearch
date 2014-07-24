@@ -6,7 +6,7 @@ namespace NElasticsearch.Models
     /// <summary>
     /// Individual hit response from ElasticSearch.
     /// </summary>
-    [DebuggerDisplay("{_type} in {_index} id {_id}")]
+    [DebuggerDisplay("{_typeName} in {_index} id {_id}")]
     public class Hit<T>
     {
         public string _index { get; set; }

@@ -55,6 +55,8 @@
     <Compile Include="Commands\SingleDocumentCommands.cs" />
     <Compile Include="ElasticsearchException.cs" />
     <Compile Include="ElasticsearchRestClient.cs" />
+    <Compile Include="Helpers\BulkOperation.cs" />
+    <Compile Include="Models\BulkOperationItem.cs" />
     <Compile Include="Models\GetResponse.cs" />
     <Compile Include="Models\SearchResponse.cs" />
     <Compile Include="Models\Hit.cs" />
