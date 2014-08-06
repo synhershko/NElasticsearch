@@ -17,24 +17,27 @@ namespace NElasticsearch.Helpers
             return new BulkOperationOnKnownIndex(index);
         }
 
-        public static BulkOperationOnKnownIndex On(string index, string type)
+        public static BulkOperationOnKnownIndexAndType On(string index, string type)
         {
             return new BulkOperationOnKnownIndexAndType(index, type);
         }
 
-        public BulkOperationItem.Index Index(string index, string type, object obj, string id = null)
+        public BulkOperation Index(string index, string type, object obj, string id = null)
         {
-            return new BulkOperationItem.Index(index, type, obj, id);
+            BulkOperationItems.Add(new BulkOperationItem.Index(index, type, obj, id));
+            return this;
         }
 
-        public BulkOperationItem.Create Create(string index, string type, object obj, string id)
+        public BulkOperation Create(string index, string type, object obj, string id)
         {
-            return new BulkOperationItem.Create(index, type, obj, id);
+            BulkOperationItems.Add(new BulkOperationItem.Create(index, type, obj, id));
+            return this;
         }
 
-        public BulkOperationItem.Delete Delete(string index, string type, string id)
+        public BulkOperation Delete(string index, string type, string id)
         {
-            return new BulkOperationItem.Delete(index, type, id);
+            BulkOperationItems.Add(new BulkOperationItem.Delete(index, type, id));
+            return this;
         }
     }
 
@@ -47,19 +50,22 @@ namespace NElasticsearch.Helpers
             IndexName = indexName;
         }
 
-        public BulkOperationItem.Index Index(string type, object obj, string id = null)
+        public BulkOperationOnKnownIndex Index(string type, object obj, string id = null)
         {
-            return new BulkOperationItem.Index(IndexName, type, obj, id);
+            BulkOperationItems.Add(new BulkOperationItem.Index(IndexName, type, obj, id));
+            return this;
         }
 
-        public BulkOperationItem.Create Create(string type, object obj, string id)
+        public BulkOperationOnKnownIndex Create(string type, object obj, string id)
         {
-            return new BulkOperationItem.Create(IndexName, type, obj, id);
+            BulkOperationItems.Add(new BulkOperationItem.Create(IndexName, type, obj, id));
+            return this;
         }
 
-        public BulkOperationItem.Delete Delete(string type, string id)
+        public BulkOperationOnKnownIndex Delete(string type, string id)
         {
-            return new BulkOperationItem.Delete(IndexName, type, id);
+            BulkOperationItems.Add(new BulkOperationItem.Delete(IndexName, type, id));
+            return this;
         }
     }
 
@@ -72,19 +78,22 @@ namespace NElasticsearch.Helpers
             TypeName = type;
         }
 
-        public BulkOperationItem.Index Index(object obj, string id = null)
+        public BulkOperationOnKnownIndexAndType Index(object obj, string id = null)
         {
-            return new BulkOperationItem.Index(IndexName, TypeName, obj, id);
+            BulkOperationItems.Add(new BulkOperationItem.Index(IndexName, TypeName, obj, id));
+            return this;
         }
 
-        public BulkOperationItem.Create Create(object obj, string id)
+        public BulkOperationOnKnownIndexAndType Create(object obj, string id)
         {
-            return new BulkOperationItem.Create(IndexName, TypeName, obj, id);
+            BulkOperationItems.Add(new BulkOperationItem.Create(IndexName, TypeName, obj, id));
+            return this;
         }
 
-        public BulkOperationItem.Delete Delete(string id)
+        public BulkOperationOnKnownIndexAndType Delete(string id)
         {
-            return new BulkOperationItem.Delete(IndexName, TypeName, id);
+            BulkOperationItems.Add(new BulkOperationItem.Delete(IndexName, TypeName, id));
+            return this;
         }
     }
 }
