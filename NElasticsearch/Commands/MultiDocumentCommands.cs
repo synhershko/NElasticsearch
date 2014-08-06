@@ -18,23 +18,25 @@ namespace NElasticsearch.Commands
         }
 
         public static void Bulk(this ElasticsearchRestClient client, IEnumerable<BulkOperationItem> bulkOperationsItem)
-        {
-            var request = new RestRequest("/_bulk", Method.POST);
-
+        {          
             var sb = new StringBuilder();
             var serializer = new JsonSerializer();
             foreach (var item in bulkOperationsItem)
             {
                 item.WriteToStringBuilder(sb, serializer);
             }
-            request.AddBody(sb.ToString());
+
+            var request = new RestRequest("/_bulk", Method.POST);
+            request.RequestFormat = DataFormat.Json;
+            request.AddParameter("text/json", sb.ToString(), ParameterType.RequestBody);
+            //request.AddBody(sb.ToString());
             var response = client.Execute(request);
 
             // TODO
             if (response.ErrorException != null)
                 throw response.ErrorException;
             
-            if (response.StatusCode == HttpStatusCode.BadRequest)
+            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
                 throw ElasticsearchException.CreateFromResponseBody(response.Content);
         }
 

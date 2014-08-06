@@ -34,7 +34,7 @@ namespace NElasticsearch.Models
                 sb.AppendFormat(@"{{ ""index"" : {{ ""_index"" : ""{0}"", ""_type"" : ""{1}""", _indexName, _typeName);
                 if (!string.IsNullOrWhiteSpace(_id))
                     sb.AppendFormat(@", ""_id"" : ""{0}""", _id);
-                sb.Append(@" }} }}\n");
+                sb.Append(" } }\n");
                 var str = _obj as string;
                 if (str != null)
                     sb.Append(str);
@@ -63,7 +63,7 @@ namespace NElasticsearch.Models
             {
                 sb.AppendFormat(@"{{ ""create"" : {{ ""_index"" : ""{0}"", ""_type"" : ""{1}""", _indexName, _typeName);
                 sb.AppendFormat(@", ""_id"" : ""{0}""", _id);
-                sb.Append(@" }} }}\n");
+                sb.Append(" } }\n");
                 var str = _obj as string;
                 if (str != null)
                     sb.Append(str);
@@ -89,7 +89,7 @@ namespace NElasticsearch.Models
             public override void WriteToStringBuilder(StringBuilder sb, JsonSerializer serializer)
             {
                 sb.AppendFormat(@"{{ ""index"" : {{ ""_index"" : ""{0}"", ""_type"" : ""{1}"", ""_id"" : ""{2}""", _indexName, _typeName, _id);
-                sb.Append(@" }} }}\n");
+                sb.Append(" } }\n");
             }
         }
     }
