@@ -35,7 +35,11 @@ namespace NElasticsearch.Models
                 if (!string.IsNullOrWhiteSpace(_id))
                     sb.AppendFormat(@", ""_id"" : ""{0}""", _id);
                 sb.Append(@" }} }}\n");
-                serializer.Serialize(_obj);
+                var str = _obj as string;
+                if (str != null)
+                    sb.Append(str);
+                else
+                    sb.Append(serializer.Serialize(_obj));
                 sb.Append('\n');
             }
         }
@@ -60,7 +64,11 @@ namespace NElasticsearch.Models
                 sb.AppendFormat(@"{{ ""create"" : {{ ""_index"" : ""{0}"", ""_type"" : ""{1}""", _indexName, _typeName);
                 sb.AppendFormat(@", ""_id"" : ""{0}""", _id);
                 sb.Append(@" }} }}\n");
-                serializer.Serialize(_obj);
+                var str = _obj as string;
+                if (str != null)
+                    sb.Append(str);
+                else
+                    sb.Append(serializer.Serialize(_obj));
                 sb.Append('\n');
             }
         }
