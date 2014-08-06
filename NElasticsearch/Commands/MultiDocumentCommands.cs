@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using NElasticsearch.Helpers;
 using NElasticsearch.Models;
@@ -32,6 +33,9 @@ namespace NElasticsearch.Commands
             // TODO
             if (response.ErrorException != null)
                 throw response.ErrorException;
+            
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+                throw ElasticsearchException.CreateFromResponseBody(response.Content);
         }
 
         // TODO Bulk UDP API
