@@ -45,12 +45,12 @@ namespace NElasticsearch
 
         public RestRequestAsyncHandle ExecuteAsync(IRestRequest request, Action<IRestResponse, RestRequestAsyncHandle> callback)
         {
-            throw new NotImplementedException();
+            return GetRestClient().ExecuteAsync(request, callback);
         }
 
         public RestRequestAsyncHandle ExecuteAsync<T>(IRestRequest request, Action<IRestResponse<T>, RestRequestAsyncHandle> callback)
         {
-            throw new NotImplementedException();
+            return GetRestClient().ExecuteAsync<T>(request, callback);
         }
 
         public IRestResponse Execute(IRestRequest request)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using NElasticsearch.Models;
 using RestSharp;
 
@@ -22,6 +24,28 @@ namespace NElasticsearch.Commands
         {
             var response = client.Execute<SearchResponse<T>>(GetSearchRequest(query, indexNames, typeNames));
             VerifySearchResponse(response);
+            return response.Data;
+        }
+
+        public static async Task<SearchResponse<T>> SearchAsync<T>
+            (this ElasticsearchRestClient client,
+             object query, string[] indexNames = null,
+             string[] typeNames = null) where T : new()
+        {
+            RestRequest searchRequest = GetSearchRequest(query, indexNames, typeNames);
+
+            TaskCompletionSource<IRestResponse<SearchResponse<T>>> taskSource =
+                new TaskCompletionSource<IRestResponse<SearchResponse<T>>>();
+
+            RestRequestAsyncHandle requestHandle =
+                client.ExecuteAsync<SearchResponse<T>>
+                    (searchRequest,
+                     (restResponse, handle) => taskSource.SetResult(restResponse));
+
+            var response = await taskSource.Task;
+
+            VerifySearchResponse(response);
+
             return response.Data;
         }
 
