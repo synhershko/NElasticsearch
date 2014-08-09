@@ -43,6 +43,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientsPool.cs" />
     <Compile Include="Commands\AliasesManagementCommands.cs" />
     <Compile Include="Commands\AliasManagementCommands.cs" />
     <Compile Include="Commands\IndexManagementCommands.cs" />

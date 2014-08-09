@@ -12,8 +12,7 @@ namespace NElasticsearch
 {
     public class ElasticsearchRestClient
     {
-        private readonly List<RestClient> _internalClients = new List<RestClient>();
-        private int currentClientId = 0;
+        private readonly ClientsPool _clientsPool = new ClientsPool();
 
         public ElasticsearchRestClient(params string[] elasticsearchUrls)
             : this(elasticsearchUrls.Select(x => new Uri(x)).ToArray())
@@ -31,41 +30,53 @@ namespace NElasticsearch
                 internalClient.AddHandler("text/json", new JsonDeserializer());
                 internalClient.AddHandler("text/x-json", new JsonDeserializer());
                 internalClient.AddHandler("*", new JsonDeserializer());
-                _internalClients.Add(internalClient);
+                _clientsPool.Add(internalClient);
             }            
-        }
-
-        private RestClient GetRestClient()
-        {
-            var ret = _internalClients[currentClientId];
-            if (++currentClientId == _internalClients.Count)
-                currentClientId = 0;
-            return ret;
         }
 
         public RestRequestAsyncHandle ExecuteAsync(IRestRequest request, Action<IRestResponse, RestRequestAsyncHandle> callback)
         {
-            return GetRestClient().ExecuteAsync(request, callback);
+            return _clientsPool.GetEndpoint().RestClient.ExecuteAsync(request, callback);
         }
 
         public RestRequestAsyncHandle ExecuteAsync<T>(IRestRequest request, Action<IRestResponse<T>, RestRequestAsyncHandle> callback)
         {
-            return GetRestClient().ExecuteAsync<T>(request, callback);
+            return _clientsPool.GetEndpoint().RestClient.ExecuteAsync<T>(request, callback);
         }
 
         public IRestResponse Execute(IRestRequest request)
         {
-            return GetRestClient().Execute(request);
+            while (true)
+            {
+                var endpoint = _clientsPool.GetEndpoint();
+                var rsp = endpoint.RestClient.Execute(request);
+                if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
+                {
+                    endpoint.MarkFailure();
+                    continue;
+                }
+                return rsp;
+            }
         }
 
         public IRestResponse<T> Execute<T>(IRestRequest request) where T : new()
         {
-            return GetRestClient().Execute<T>(request);
+            while (true)
+            {
+                var endpoint = _clientsPool.GetEndpoint();
+                var rsp = endpoint.RestClient.Execute<T>(request);
+                if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
+                {
+                    endpoint.MarkFailure();
+                    continue;
+                }
+                return rsp;
+            }
         }
 
         public Uri BuildUri(IRestRequest request)
         {
-            return GetRestClient().BuildUri(request);
+            throw new NotImplementedException();
         }
 
         public RestRequestAsyncHandle ExecuteAsyncGet(IRestRequest request, Action<IRestResponse, RestRequestAsyncHandle> callback, string httpMethod)
@@ -90,22 +101,22 @@ namespace NElasticsearch
 
         public IRestResponse ExecuteAsGet(IRestRequest request, string httpMethod)
         {
-            return GetRestClient().ExecuteAsGet(request, httpMethod);
+            throw new NotImplementedException();
         }
 
         public IRestResponse ExecuteAsPost(IRestRequest request, string httpMethod)
         {
-            return GetRestClient().ExecuteAsPost(request, httpMethod);
+            throw new NotImplementedException();
         }
 
         public IRestResponse<T> ExecuteAsGet<T>(IRestRequest request, string httpMethod) where T : new()
         {
-            return GetRestClient().ExecuteAsGet<T>(request, httpMethod);
+            throw new NotImplementedException();
         }
 
         public IRestResponse<T> ExecuteAsPost<T>(IRestRequest request, string httpMethod) where T : new()
         {
-            return GetRestClient().ExecuteAsPost<T>(request, httpMethod);
+            throw new NotImplementedException();
         }
 
         public Task<IRestResponse<T>> ExecuteTaskAsync<T>(IRestRequest request, CancellationToken token)

@@ -32,12 +32,9 @@ namespace NElasticsearch.Commands
              object query, string[] indexNames = null,
              string[] typeNames = null) where T : new()
         {
-            RestRequest searchRequest = GetSearchRequest(query, indexNames, typeNames);
-
-            TaskCompletionSource<IRestResponse<SearchResponse<T>>> taskSource =
-                new TaskCompletionSource<IRestResponse<SearchResponse<T>>>();
-
-            RestRequestAsyncHandle requestHandle =
+            var searchRequest = GetSearchRequest(query, indexNames, typeNames);
+            var taskSource = new TaskCompletionSource<IRestResponse<SearchResponse<T>>>();
+            var requestHandle =
                 client.ExecuteAsync<SearchResponse<T>>
                     (searchRequest,
                      (restResponse, handle) => taskSource.SetResult(restResponse));
