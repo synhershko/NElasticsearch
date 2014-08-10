@@ -29,7 +29,6 @@ namespace NElasticsearch.Commands
             var request = new RestRequest("/_bulk", Method.POST);
             request.RequestFormat = DataFormat.Json;
             request.AddParameter("text/json", sb.ToString(), ParameterType.RequestBody);
-            //request.AddBody(sb.ToString());
             var response = client.Execute(request);
 
             // TODO
