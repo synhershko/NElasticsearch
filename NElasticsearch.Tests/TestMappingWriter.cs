@@ -25,7 +25,7 @@ namespace NElasticsearch.Tests
 
             sb.Length = 0;
             Assert.True(TypeMappingWriter.WritePropertyMappingsFor<FileWithTwoAtts>(sb));
-            Assert.Equal(@"{""fileType"":{""type"":""string"",""index"":""not_analyzed""},""size"":{""type"":""integer""}}", sb.ToString());
+            Assert.Equal(@"{""FileType"":{""type"":""string"",""index"":""not_analyzed""},""Size"":{""type"":""integer""}}", sb.ToString());
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace NElasticsearch.Tests
 
             sb.Length = 0;
             Assert.True(TypeMappingWriter.GetMappingFor<FileWithTwoAtts>(sb, "test"));
-            Assert.Equal(@"{""test"":{""properties"":{""fileType"":{""type"":""string"",""index"":""not_analyzed""},""size"":{""type"":""integer""}}}}", sb.ToString());
+            Assert.Equal(@"{""test"":{""properties"":{""FileType"":{""type"":""string"",""index"":""not_analyzed""},""Size"":{""type"":""integer""}}}}", sb.ToString());
         }
 
         class FileWithEmptyAtts
