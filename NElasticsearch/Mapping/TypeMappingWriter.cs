@@ -58,7 +58,7 @@ namespace NElasticsearch.Mapping
 
                 // TODO consider unchanged attribute as no-op
 
-                var propertyName = att.Name ?? p.Name.AddUnderscores().ToLowerInvariant();
+                var propertyName = att.Name ?? p.Name.ToPascalCase(CultureInfo.InvariantCulture);
                 
                 var type = GetElasticSearchType(att, p);
                 if (type == null) //could not get type from attribute or infer from CLR type.
