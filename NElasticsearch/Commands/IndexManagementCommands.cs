@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using System.Net;
+using RestSharp;
 
 namespace NElasticsearch.Commands
 {
@@ -7,7 +8,11 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class IndexManagementCommands
     {
-        // TODO Create index API
+        public static void CreateIndex(this ElasticsearchRestClient client, string indexName)
+        {
+            var request = new RestRequest(indexName, Method.PUT);
+            var response = client.Execute(request);
+        }
 
         public static void DeleteIndex(this ElasticsearchRestClient client, string indexName)
         {
@@ -15,7 +20,13 @@ namespace NElasticsearch.Commands
             var response = client.Execute(request);
         }
 
-        // TODO Exists API
+        public static bool IndexExists(this ElasticsearchRestClient client, string indexName)
+        {
+            var request = new RestRequest(indexName, Method.HEAD);
+            var response = client.Execute(request);
+            return response.StatusCode == HttpStatusCode.OK;
+        }
+
         // TODO Open/Close index API
 
         public static void Refresh(this ElasticsearchRestClient client, string indexName = null)
