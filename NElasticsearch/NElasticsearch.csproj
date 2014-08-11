@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientsPool.cs" />
@@ -56,6 +57,15 @@
     <Compile Include="ElasticsearchException.cs" />
     <Compile Include="ElasticsearchRestClient.cs" />
     <Compile Include="Helpers\BulkOperation.cs" />
+    <Compile Include="Helpers\StringExtensions.cs" />
+    <Compile Include="Mapping\ElasticsearchPropertyAttribute.cs" />
+    <Compile Include="Mapping\ElasticsearchTypeAttribute.cs" />
+    <Compile Include="Mapping\FieldIndexOption.cs" />
+    <Compile Include="Mapping\FieldType.cs" />
+    <Compile Include="Mapping\NumberType.cs" />
+    <Compile Include="Mapping\StringBuilderJsonMockHelpers.cs" />
+    <Compile Include="Mapping\TermVectorOption.cs" />
+    <Compile Include="Mapping\TypeMappingWriter.cs" />
     <Compile Include="Models\BulkOperationItem.cs" />
     <Compile Include="Models\GetResponse.cs" />
     <Compile Include="Models\SearchResponse.cs" />

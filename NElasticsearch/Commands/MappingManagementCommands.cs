@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Reflection;
 using System.Text;
+using NElasticsearch.Mapping;
 using RestSharp;
 
 namespace NElasticsearch.Commands
@@ -11,6 +10,23 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class MappingManagementCommands
     {
+        public static void PutMappingFor<T>(this ElasticsearchRestClient client, string indexName)
+        {
+            PutMappingFor<T>(client, new[] { indexName });
+        }
+
+        public static void PutMappingFor<T>(this ElasticsearchRestClient client, string[] indexNames)
+        {
+            var typeName = TypeMappingWriter.GetMappingTypeNameFor<T>();
+
+            // We are only going to do a put mapping if there are attributes asking for it
+            var sb = new StringBuilder();
+            if (TypeMappingWriter.GetMappingFor<T>(sb, typeName))
+            {
+                PutMapping(client, indexNames, typeName, sb.ToString());
+            }
+        }
+        
         public static void PutMapping(this ElasticsearchRestClient client,
             string indexName, string typeName, object mapping)
         {
@@ -33,9 +49,13 @@ namespace NElasticsearch.Commands
             sb.Append(typeName);
             sb.Append("/_mapping");
             var request = new RestRequest(sb.ToString(), Method.PUT);
-
             request.RequestFormat = DataFormat.Json;
-            request.AddBody(mapping);
+
+            var mappingString = mapping as string;
+            if (mappingString != null)
+                request.AddParameter("text/json", mapping, ParameterType.RequestBody);
+            else
+                request.AddBody(mapping);
             var response = client.Execute(request);
 
             // TODO
