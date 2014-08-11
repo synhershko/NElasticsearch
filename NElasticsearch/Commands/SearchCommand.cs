@@ -62,10 +62,13 @@ namespace NElasticsearch.Commands
 
         internal static void VerifySearchResponse(IRestResponse response)
         {
+            if (response.ErrorException != null || response.StatusCode == 0)
+                throw new Exception("NElasticsearch internal error", response.ErrorException);
+
+            // Expected HTTP status code for searches is 200, if we haven't got that something went wrong on the server
+            // WebExceptions (e.g. network error or server is unavailable are propogated and handled by the caller
             if (response.StatusCode != HttpStatusCode.OK)
                 throw ElasticsearchException.CreateFromResponseBody(response.Content);
-            if (response.ErrorException != null)
-                throw new Exception("NElasticsearch internal error", response.ErrorException);
         }
 
         private static RestRequest GetSearchRequest(object query, string[] indexNames = null, string[] typeNames = null)
