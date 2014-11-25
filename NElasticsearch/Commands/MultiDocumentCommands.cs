@@ -17,7 +17,7 @@ namespace NElasticsearch.Commands
             Bulk(client, bulkOperation.BulkOperationItems);
         }
 
-        public static void Bulk(this ElasticsearchRestClient client, IEnumerable<BulkOperationItem> bulkOperationsItem)
+        public static async void Bulk(this ElasticsearchRestClient client, IEnumerable<BulkOperationItem> bulkOperationsItem)
         {          
             var sb = new StringBuilder();
             var serializer = new JsonSerializer();
@@ -29,7 +29,7 @@ namespace NElasticsearch.Commands
             var request = new RestRequest("/_bulk", Method.POST);
             request.RequestFormat = DataFormat.Json;
             request.AddParameter("text/json", sb.ToString(), ParameterType.RequestBody);
-            var response = client.Execute(request);
+            var response = await client.Execute(request);
 
             // TODO
             if (response.ErrorException != null)

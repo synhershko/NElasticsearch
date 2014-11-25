@@ -33,7 +33,7 @@ namespace NElasticsearch.Commands
             PutMapping(client, new[] {indexName}, typeName, mapping);
         }
 
-        public static void PutMapping(this ElasticsearchRestClient client,
+        public static async void PutMapping(this ElasticsearchRestClient client,
             string[] indexNames, string typeName, object mapping)
         {
             var sb = new StringBuilder();
@@ -56,7 +56,7 @@ namespace NElasticsearch.Commands
                 request.AddParameter("text/json", mapping, ParameterType.RequestBody);
             else
                 request.AddBody(mapping);
-            var response = client.Execute(request);
+            var response = await client.Execute(request);
 
             // TODO
             if (response.ErrorException != null)
@@ -66,13 +66,13 @@ namespace NElasticsearch.Commands
         // TODO Get mapping API
         // TODO Get Field Mapping API
 
-        public static void DeleteMapping(this ElasticsearchRestClient client,
+        public static async void DeleteMapping(this ElasticsearchRestClient client,
             string indexName, string typeName)
         {
             var request =
                 new RestRequest(indexName + "/" + typeName + "/_mapping", Method.DELETE);
 
-            var response = client.Execute(request);
+            var response = await client.Execute(request);
 
             // TODO
             if (response.ErrorException != null)

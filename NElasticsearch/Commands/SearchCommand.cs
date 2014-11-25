@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using NElasticsearch.Models;
 using RestSharp;
@@ -13,16 +12,16 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class SearchCommand
     {
-        public static SearchResponse<T> Search<T>(this ElasticsearchRestClient client,
+        public static async Task<SearchResponse<T>> Search<T>(this ElasticsearchRestClient client,
             object query, string indexName = null, string typeName = null) where T : new()
         {
-            return Search<T>(client, query, (indexName == null) ? null : new[] { indexName }, (typeName == null) ? null : new[] { typeName });
+            return await Search<T>(client, query, (indexName == null) ? null : new[] { indexName }, (typeName == null) ? null : new[] { typeName });
         }
 
-        public static SearchResponse<T> Search<T>(this ElasticsearchRestClient client,
+        public static async Task<SearchResponse<T>> Search<T>(this ElasticsearchRestClient client,
             object query, string[] indexNames = null, string[] typeNames = null) where T : new()
         {
-            var response = client.Execute<SearchResponse<T>>(GetSearchRequest(query, indexNames, typeNames));
+            var response = await client.Execute<SearchResponse<T>>(GetSearchRequest(query, indexNames, typeNames));
             VerifySearchResponse(response);
             return response.Data;
         }
@@ -33,29 +32,24 @@ namespace NElasticsearch.Commands
              string[] typeNames = null) where T : new()
         {
             var searchRequest = GetSearchRequest(query, indexNames, typeNames);
-            var taskSource = new TaskCompletionSource<IRestResponse<SearchResponse<T>>>();
-            var requestHandle =
-                client.ExecuteAsync<SearchResponse<T>>
-                    (searchRequest,
-                     (restResponse, handle) => taskSource.SetResult(restResponse));
 
-            var response = await taskSource.Task;
+            var response = await client.Execute<SearchResponse<T>>(searchRequest);
 
             VerifySearchResponse(response);
 
             return response.Data;
         }
 
-        public static string Search(this ElasticsearchRestClient client,
+        public static async Task<string> Search(this ElasticsearchRestClient client,
             object query, string indexName = null, string typeName = null)
         {
-            return Search(client, query, (indexName == null) ? null : new[] {indexName}, (typeName == null) ? null : new[] {typeName});
+            return await Search(client, query, (indexName == null) ? null : new[] {indexName}, (typeName == null) ? null : new[] {typeName});
         }
 
-        public static string Search(this ElasticsearchRestClient client,
+        public static async Task<string> Search(this ElasticsearchRestClient client,
             object query, string[] indexNames = null, string[] typeNames = null)
         {
-            var response = client.Execute(GetSearchRequest(query, indexNames, typeNames));
+            var response = await client.Execute(GetSearchRequest(query, indexNames, typeNames));
             VerifySearchResponse(response);
             return response.Content;
         }

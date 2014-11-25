@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using NElasticsearch.Models;
 using RestSharp;
 using RestSharp.Deserializers;
 
@@ -39,24 +40,16 @@ namespace NElasticsearch
                 internalClient.AddHandler("*", new JsonDeserializer());
                 _clientsPool.Add(internalClient);
             }            
-        }
+        }       
 
-        public RestRequestAsyncHandle ExecuteAsync(IRestRequest request, Action<IRestResponse, RestRequestAsyncHandle> callback)
-        {
-            return _clientsPool.GetEndpoint().RestClient.ExecuteAsync(request, callback);
-        }
-
-        public RestRequestAsyncHandle ExecuteAsync<T>(IRestRequest request, Action<IRestResponse<T>, RestRequestAsyncHandle> callback)
-        {
-            return _clientsPool.GetEndpoint().RestClient.ExecuteAsync<T>(request, callback);
-        }
-
-        public IRestResponse Execute(IRestRequest request)
+        public async Task<IRestResponse> Execute(IRestRequest request)
         {
             while (true)
             {
+                var taskSource = new TaskCompletionSource<IRestResponse>();
                 var endpoint = _clientsPool.GetEndpoint();
-                var rsp = endpoint.RestClient.Execute(request);
+                endpoint.RestClient.ExecuteAsync(request, (restResponse, handle) => taskSource.SetResult(restResponse));
+                var rsp = await taskSource.Task;
                 if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
                 {
                     endpoint.MarkFailure();
@@ -66,12 +59,14 @@ namespace NElasticsearch
             }
         }
 
-        public IRestResponse<T> Execute<T>(IRestRequest request) where T : new()
+        public async Task<IRestResponse<T>> Execute<T>(IRestRequest request) where T : new()
         {
             while (true)
             {
+                var taskSource = new TaskCompletionSource<IRestResponse<T>>();
                 var endpoint = _clientsPool.GetEndpoint();
-                var rsp = endpoint.RestClient.Execute<T>(request);
+                endpoint.RestClient.ExecuteAsync<T>(request, (restResponse, handle) => taskSource.SetResult(restResponse));
+                var rsp = await taskSource.Task;
                 if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
                 {
                     endpoint.MarkFailure();
@@ -79,7 +74,7 @@ namespace NElasticsearch
                 }
                 return rsp;
             }
-        }        
+        }
 
         public CookieContainer CookieContainer { get; set; }
         public string UserAgent { get; set; }

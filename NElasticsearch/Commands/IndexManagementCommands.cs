@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using RestSharp;
 
 namespace NElasticsearch.Commands
@@ -20,10 +21,10 @@ namespace NElasticsearch.Commands
             var response = client.Execute(request);
         }
 
-        public static bool IndexExists(this ElasticsearchRestClient client, string indexName)
+        public static async Task<bool> IndexExists(this ElasticsearchRestClient client, string indexName)
         {
             var request = new RestRequest(indexName, Method.HEAD);
-            var response = client.Execute(request);
+            var response = await client.Execute(request);
             return response.StatusCode == HttpStatusCode.OK;
         }
 
