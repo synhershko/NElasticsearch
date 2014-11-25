@@ -10,7 +10,7 @@ namespace NElasticsearch
 {
     public class ElasticsearchRestClient
     {
-        private readonly ClientsPool _clientsPool = new ClientsPool();
+        private readonly ClientsPool<RestClient> _clientsPool = new ClientsPool<RestClient>();
 
         public ElasticsearchRestClient(params string[] elasticsearchUrls)
             : this(elasticsearchUrls.Select(x => new Uri(x)).ToArray())

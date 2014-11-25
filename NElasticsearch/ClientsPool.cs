@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using RestSharp;
 
 namespace NElasticsearch
 {
-    class ClientsPool
+    class ClientsPool<T>
     {
         public class ElasticsearchEndpoint
         {
-            public ElasticsearchEndpoint(RestClient client)
+            public ElasticsearchEndpoint(T client)
             {
                 RestClient = client;
             }
 
-            public RestClient RestClient { get; set; }
+            public T RestClient { get; set; }
             public DateTime LatestFailure { get; set; }
             public int NumberOfFailures { get; set; }
 
@@ -50,7 +49,7 @@ namespace NElasticsearch
         private readonly ConcurrentQueue<ElasticsearchEndpoint> _clients = new ConcurrentQueue<ElasticsearchEndpoint>();
         private readonly ConcurrentQueue<ElasticsearchEndpoint> _deadClients = new ConcurrentQueue<ElasticsearchEndpoint>();
 
-        public void Add(RestClient client)
+        public void Add(T client)
         {
             _clients.Enqueue(new ElasticsearchEndpoint(client));
         }
