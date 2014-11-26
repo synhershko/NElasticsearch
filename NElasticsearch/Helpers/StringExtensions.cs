@@ -23,6 +23,7 @@ namespace NElasticsearch.Helpers
         {
             return string.Join(",", enumValues.Select(e => e.GetStringValue()));
         }
+
         internal static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);

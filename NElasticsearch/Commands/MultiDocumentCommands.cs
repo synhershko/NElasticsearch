@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 using System.Text;
 using NElasticsearch.Helpers;
 using NElasticsearch.Models;
-using RestSharp;
 using RestSharp.Serializers;
 
 namespace NElasticsearch.Commands
@@ -12,12 +10,12 @@ namespace NElasticsearch.Commands
     {
         // TODO Multi-Get API
 
-        public static void Bulk(this ElasticsearchRestClient client, BulkOperation bulkOperation)
+        public static void Bulk(this ElasticsearchClient client, BulkOperation bulkOperation)
         {
             Bulk(client, bulkOperation.BulkOperationItems);
         }
 
-        public static async void Bulk(this ElasticsearchRestClient client, IEnumerable<BulkOperationItem> bulkOperationsItem)
+        public static async void Bulk(this ElasticsearchClient client, IEnumerable<BulkOperationItem> bulkOperationsItem)
         {          
             var sb = new StringBuilder();
             var serializer = new JsonSerializer();
@@ -25,18 +23,7 @@ namespace NElasticsearch.Commands
             {
                 item.WriteToStringBuilder(sb, serializer);
             }
-
-            var request = new RestRequest("/_bulk", Method.POST);
-            request.RequestFormat = DataFormat.Json;
-            request.AddParameter("text/json", sb.ToString(), ParameterType.RequestBody);
-            var response = await client.Execute(request);
-
-            // TODO
-            if (response.ErrorException != null)
-                throw response.ErrorException;
-            
-            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
-                throw ElasticsearchException.CreateFromResponseBody(response.Content);
+            await client.Execute(RestMethod.POST, "/_bulk", sb.ToString());            
         }
 
         // TODO Bulk UDP API

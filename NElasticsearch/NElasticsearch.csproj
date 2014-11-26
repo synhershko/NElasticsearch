@@ -54,9 +54,11 @@
     <Compile Include="Commands\MultiDocumentCommands.cs" />
     <Compile Include="Commands\SearchCommand.cs" />
     <Compile Include="Commands\SingleDocumentCommands.cs" />
+    <Compile Include="ElasticsearchClient.cs" />
     <Compile Include="ElasticsearchException.cs" />
     <Compile Include="ElasticsearchRestClient.cs" />
     <Compile Include="Helpers\BulkOperation.cs" />
+    <Compile Include="Helpers\ElasticsearchUrlBuilder.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Mapping\ElasticsearchPropertyAttribute.cs" />
     <Compile Include="Mapping\ElasticsearchTypeAttribute.cs" />
@@ -73,6 +75,8 @@
     <Compile Include="Models\Hits.cs" />
     <Compile Include="Models\ShardStatistics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceNotFoundException.cs" />
+    <Compile Include="RestMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

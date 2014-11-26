@@ -1,4 +1,5 @@
-﻿using NElasticsearch.Commands;
+﻿using System;
+using NElasticsearch.Commands;
 using NElasticsearch.Tests.TestModels;
 using Xunit;
 

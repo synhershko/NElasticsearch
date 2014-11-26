@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using System.Text;
+﻿using System.Text;
 using NElasticsearch.Mapping;
-using RestSharp;
 
 namespace NElasticsearch.Commands
 {
@@ -10,12 +8,12 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class MappingManagementCommands
     {
-        public static void PutMappingFor<T>(this ElasticsearchRestClient client, string indexName)
+        public static void PutMappingFor<T>(this ElasticsearchClient client, string indexName)
         {
             PutMappingFor<T>(client, new[] { indexName });
         }
 
-        public static void PutMappingFor<T>(this ElasticsearchRestClient client, string[] indexNames)
+        public static void PutMappingFor<T>(this ElasticsearchClient client, string[] indexNames)
         {
             var typeName = TypeMappingWriter.GetMappingTypeNameFor<T>();
 
@@ -26,14 +24,14 @@ namespace NElasticsearch.Commands
                 PutMapping(client, indexNames, typeName, sb.ToString());
             }
         }
-        
-        public static void PutMapping(this ElasticsearchRestClient client,
+
+        public static void PutMapping(this ElasticsearchClient client,
             string indexName, string typeName, object mapping)
         {
             PutMapping(client, new[] {indexName}, typeName, mapping);
         }
 
-        public static async void PutMapping(this ElasticsearchRestClient client,
+        public static async void PutMapping(this ElasticsearchClient client,
             string[] indexNames, string typeName, object mapping)
         {
             var sb = new StringBuilder();
@@ -48,35 +46,17 @@ namespace NElasticsearch.Commands
             sb.Append('/');
             sb.Append(typeName);
             sb.Append("/_mapping");
-            var request = new RestRequest(sb.ToString(), Method.PUT);
-            request.RequestFormat = DataFormat.Json;
 
-            var mappingString = mapping as string;
-            if (mappingString != null)
-                request.AddParameter("text/json", mapping, ParameterType.RequestBody);
-            else
-                request.AddBody(mapping);
-            var response = await client.Execute(request);
-
-            // TODO
-            if (response.ErrorException != null)
-                throw response.ErrorException;
+            await client.Execute(RestMethod.PUT, sb.ToString(), mapping);
         }
 
         // TODO Get mapping API
         // TODO Get Field Mapping API
 
-        public static async void DeleteMapping(this ElasticsearchRestClient client,
+        public static async void DeleteMapping(this ElasticsearchClient client,
             string indexName, string typeName)
         {
-            var request =
-                new RestRequest(indexName + "/" + typeName + "/_mapping", Method.DELETE);
-
-            var response = await client.Execute(request);
-
-            // TODO
-            if (response.ErrorException != null)
-                throw response.ErrorException;
+            await client.Execute(RestMethod.DELETE, indexName + "/" + typeName + "/_mapping");
         }
 
         // TODO type exists API

@@ -3,13 +3,12 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using NElasticsearch.Models;
 using RestSharp;
 using RestSharp.Deserializers;
 
 namespace NElasticsearch
 {
-    public class ElasticsearchRestClient
+    public class ElasticsearchRestClient : ElasticsearchClient
     {
         private readonly ClientsPool<RestClient> _clientsPool = new ClientsPool<RestClient>();
 
@@ -40,9 +39,86 @@ namespace NElasticsearch
                 internalClient.AddHandler("*", new JsonDeserializer());
                 _clientsPool.Add(internalClient);
             }            
-        }       
+        }
 
-        public async Task<IRestResponse> Execute(IRestRequest request)
+        private static Method TranslateRestMethod(RestMethod method)
+        {
+            switch (method)
+            {
+                case RestMethod.POST:
+                    return Method.POST;
+                case RestMethod.PUT:
+                    return Method.PUT;
+                case RestMethod.DELETE:
+                    return Method.DELETE;
+                case RestMethod.GET:
+                    return Method.GET;
+                case RestMethod.HEAD:
+                    return Method.HEAD;
+                case RestMethod.OPTIONS:
+                    return Method.OPTIONS;
+                default:
+                    throw new Exception("Unrecognized REST method");
+            }
+        }
+
+        public override async Task<T> Execute<T>(RestMethod method, string url, object body = null)
+        {
+            var request = new RestRequest(url, TranslateRestMethod(method)) { RequestFormat = DataFormat.Json };
+
+            var bodyStr = body as string;
+            if (bodyStr != null)
+            {
+                request.AddParameter("text/json", body, ParameterType.RequestBody);
+            }
+            else if (body != null)
+            {
+                request.AddBody(body);
+            }
+
+            var response = await Execute<T>(request);
+
+            if (response.ErrorException != null || response.StatusCode == 0)
+                throw new Exception("NElasticsearch internal error", response.ErrorException);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new ResourceNotFoundException(url);
+
+            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
+                throw ElasticsearchException.CreateFromResponseBody(response.Content);
+
+            return response.Data;
+        }
+
+        public override async Task<string> Execute(RestMethod method, string url, object body = null)
+        {
+            var request = new RestRequest(url, TranslateRestMethod(method)) { RequestFormat = DataFormat.Json };
+
+            var bodyStr = body as string;
+            if (bodyStr != null)
+            {
+                request.AddParameter("text/json", body, ParameterType.RequestBody);
+            }
+            else if (body != null)
+            {
+                request.AddBody(body);
+            }
+
+            var response = await Execute(request);
+
+            if (response.ErrorException != null || response.StatusCode == 0)
+                throw new Exception("NElasticsearch internal error", response.ErrorException);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new ResourceNotFoundException(url);
+
+            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
+                throw ElasticsearchException.CreateFromResponseBody(response.Content);
+
+            return response.Content;
+        }
+
+        private async Task<IRestResponse> Execute(IRestRequest request)
         {
             while (true)
             {
@@ -59,7 +135,7 @@ namespace NElasticsearch
             }
         }
 
-        public async Task<IRestResponse<T>> Execute<T>(IRestRequest request) where T : new()
+        private async Task<IRestResponse<T>> Execute<T>(IRestRequest request) where T : new()
         {
             while (true)
             {
@@ -83,7 +159,5 @@ namespace NElasticsearch
         public IAuthenticator Authenticator { get; set; }
         public X509CertificateCollection ClientCertificates { get; set; }
         public IWebProxy Proxy { get; set; }
-
-        public string DefaultIndexName { get; set; }                
     }
 }

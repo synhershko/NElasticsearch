@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-using RestSharp;
+﻿using System.Threading.Tasks;
 
 namespace NElasticsearch.Commands
 {
@@ -9,31 +7,34 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class IndexManagementCommands
     {
-        public static void CreateIndex(this ElasticsearchRestClient client, string indexName)
+        public static async void CreateIndex(this ElasticsearchClient client, string indexName)
         {
-            var request = new RestRequest(indexName, Method.PUT);
-            var response = client.Execute(request);
+            await client.Execute(RestMethod.PUT, indexName);
         }
 
-        public static void DeleteIndex(this ElasticsearchRestClient client, string indexName)
+        public static async void DeleteIndex(this ElasticsearchClient client, string indexName)
         {
-            var request = new RestRequest(indexName, Method.DELETE);
-            var response = client.Execute(request);
+            await client.Execute(RestMethod.DELETE, indexName);
         }
 
-        public static async Task<bool> IndexExists(this ElasticsearchRestClient client, string indexName)
+        public static async Task<bool> IndexExists(this ElasticsearchClient client, string indexName)
         {
-            var request = new RestRequest(indexName, Method.HEAD);
-            var response = await client.Execute(request);
-            return response.StatusCode == HttpStatusCode.OK;
+            try
+            {
+                await client.Execute(RestMethod.HEAD, indexName);
+                return true;
+            }
+            catch (ResourceNotFoundException)
+            {
+                return false;
+            }
         }
 
         // TODO Open/Close index API
 
-        public static void Refresh(this ElasticsearchRestClient client, string indexName = null)
+        public static async void Refresh(this ElasticsearchClient client, string indexName = null)
         {
-            var request = new RestRequest((indexName ?? client.DefaultIndexName) + "/_refresh", Method.POST);
-            var response = client.Execute(request);
+            await client.Execute(RestMethod.POST, (indexName ?? client.DefaultIndexName) + "/_refresh");
         }
 
         // TODO http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices.html#status-management

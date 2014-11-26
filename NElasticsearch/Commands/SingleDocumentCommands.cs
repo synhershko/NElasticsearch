@@ -1,7 +1,5 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NElasticsearch.Models;
-using RestSharp;
 
 namespace NElasticsearch.Commands
 {
@@ -10,49 +8,26 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class SingleDocumentCommands
     {
-        public static async Task<GetResponse<T>> Get<T>(this ElasticsearchRestClient client,
+        public static async Task<GetResponse<T>> Get<T>(this ElasticsearchClient client,
             string id, string typeName, string indexName = null) where T : new()
         {
-            var request = new RestRequest((indexName ?? client.DefaultIndexName) + "/" + typeName + "/{id}", Method.GET);
-            request.AddUrlSegment("id", id);
-            request.RequestFormat = DataFormat.Json;
-            var response = await client.Execute<GetResponse<T>>(request);
-
-            if (response.ErrorException != null)
-                throw response.ErrorException;
-            if (response.StatusCode != HttpStatusCode.OK)
-                return null;
-
-            return response.Data;
+            var url = (indexName ?? client.DefaultIndexName) + "/" + typeName + "/" + id;            
+            return await client.Execute<GetResponse<T>>(RestMethod.GET, url);
         }
 
         // TODO remove requirement for ID, without type as well
-        public static async void Index<T>(this ElasticsearchRestClient client,
+        public static async void Index<T>(this ElasticsearchClient client,
             T obj, string id, string typeName, string indexName = null)
         {
-            var request =
-                new RestRequest((indexName ?? client.DefaultIndexName) + "/" + typeName +
-                                (!string.IsNullOrWhiteSpace(id) ? "/" + id : string.Empty), Method.POST);
-
-
-            request.RequestFormat = DataFormat.Json;
-            request.AddBody(obj);
-            var response = await client.Execute(request);
-
-            // TODO
-            if (response.ErrorException != null)
-                throw response.ErrorException;
+            var url = (indexName ?? client.DefaultIndexName) + "/" + typeName + (!string.IsNullOrWhiteSpace(id) ? "/" + id : string.Empty);
+            await client.Execute(RestMethod.POST, url, obj);
         }
 
-        public static async void Delete(this ElasticsearchRestClient client,
+        public static async void Delete(this ElasticsearchClient client,
             string id, string typeName, string indexName = null)
         {
-            var request = new RestRequest((indexName ?? client.DefaultIndexName) + "/" + typeName + "/{id}", Method.DELETE);
-            request.AddUrlSegment("id", id);
-            request.RequestFormat = DataFormat.Json;
-            var response = await client.Execute(request);
-            if (response.ErrorException != null)
-                throw response.ErrorException;            
+            var url = (indexName ?? client.DefaultIndexName) + "/" + typeName + "/" + id;
+            await client.Execute(RestMethod.DELETE, url);
         }
 
         // TODO Update API
