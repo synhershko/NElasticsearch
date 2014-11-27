@@ -129,8 +129,10 @@ namespace NElasticsearch
                 if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
                 {
                     endpoint.MarkFailure();
+                    _clientsPool.ReleaseEndpoint(endpoint);
                     continue;
                 }
+                _clientsPool.ReleaseEndpoint(endpoint);
                 return rsp;
             }
         }
@@ -146,8 +148,10 @@ namespace NElasticsearch
                 if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
                 {
                     endpoint.MarkFailure();
+                    _clientsPool.ReleaseEndpoint(endpoint);
                     continue;
                 }
+                _clientsPool.ReleaseEndpoint(endpoint);
                 return rsp;
             }
         }

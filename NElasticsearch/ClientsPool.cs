@@ -73,12 +73,17 @@ namespace NElasticsearch
                     continue;
                 }
 
-                _clients.Enqueue(endpoint);
-
                 if (endpoint.NumberOfFailures == 0 || ShouldUseFailedEndpoint(endpoint.NumberOfFailures, endpoint.LatestFailure))
                     return endpoint;
+
+                _clients.Enqueue(endpoint);
             }
-            throw new ElasticsearchException("No active Elasticsearch endpoints found");
+            throw new ElasticsearchException("No available Elasticsearch endpoints found");
+        }
+
+        public void ReleaseEndpoint(ElasticsearchEndpoint endpoint)
+        {
+            _clients.Enqueue(endpoint);
         }
     }
 }
