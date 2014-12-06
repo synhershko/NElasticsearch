@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NElasticsearch
 {
@@ -84,6 +87,11 @@ namespace NElasticsearch
         public void ReleaseEndpoint(ElasticsearchEndpoint endpoint)
         {
             _clients.Enqueue(endpoint);
+        }
+
+        internal IEnumerable<T> GetEnumerator()
+        {
+            return _clients.Select(x => x.RestClient).Concat(_deadClients.Select(x => x.RestClient));
         }
     }
 }
