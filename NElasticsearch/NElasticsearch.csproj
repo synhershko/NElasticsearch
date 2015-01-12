@@ -58,6 +58,7 @@
     <Compile Include="ElasticsearchException.cs" />
     <Compile Include="ElasticsearchRestClient.cs" />
     <Compile Include="Helpers\BulkOperation.cs" />
+    <Compile Include="Helpers\DisposableAction.cs" />
     <Compile Include="Helpers\ElasticsearchUrlBuilder.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Mapping\ElasticsearchPropertyAttribute.cs" />

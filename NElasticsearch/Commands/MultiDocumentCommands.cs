@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NElasticsearch.Helpers;
 using NElasticsearch.Models;
 using RestSharp.Serializers;
@@ -10,12 +11,12 @@ namespace NElasticsearch.Commands
     {
         // TODO Multi-Get API
 
-        public static void Bulk(this ElasticsearchClient client, BulkOperation bulkOperation)
+        public static async Task Bulk(this ElasticsearchClient client, BulkOperation bulkOperation)
         {
-            Bulk(client, bulkOperation.BulkOperationItems);
+            await Bulk(client, bulkOperation.BulkOperationItems);
         }
 
-        public static async void Bulk(this ElasticsearchClient client, IEnumerable<BulkOperationItem> bulkOperationsItem)
+        public static async Task Bulk(this ElasticsearchClient client, IEnumerable<BulkOperationItem> bulkOperationsItem)
         {          
             var sb = new StringBuilder();
             var serializer = new JsonSerializer();

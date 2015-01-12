@@ -7,12 +7,12 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class IndexManagementCommands
     {
-        public static async void CreateIndex(this ElasticsearchClient client, string indexName)
+        public static async Task CreateIndex(this ElasticsearchClient client, string indexName)
         {
             await client.Execute(RestMethod.PUT, indexName);
         }
 
-        public static async void DeleteIndex(this ElasticsearchClient client, string indexName)
+        public static async Task DeleteIndex(this ElasticsearchClient client, string indexName)
         {
             await client.Execute(RestMethod.DELETE, indexName);
         }
@@ -32,7 +32,7 @@ namespace NElasticsearch.Commands
 
         // TODO Open/Close index API
 
-        public static async void Refresh(this ElasticsearchClient client, string indexName = null)
+        public static async Task Refresh(this ElasticsearchClient client, string indexName = null)
         {
             await client.Execute(RestMethod.POST, (indexName ?? client.DefaultIndexName) + "/_refresh");
         }

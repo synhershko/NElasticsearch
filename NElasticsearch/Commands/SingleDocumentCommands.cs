@@ -16,14 +16,14 @@ namespace NElasticsearch.Commands
         }
 
         // TODO remove requirement for ID, without type as well
-        public static async void Index<T>(this ElasticsearchClient client,
+        public static async Task Index<T>(this ElasticsearchClient client,
             T obj, string id, string typeName, string indexName = null)
         {
             var url = (indexName ?? client.DefaultIndexName) + "/" + typeName + (!string.IsNullOrWhiteSpace(id) ? "/" + id : string.Empty);
             await client.Execute(RestMethod.POST, url, obj);
         }
 
-        public static async void Delete(this ElasticsearchClient client,
+        public static async Task Delete(this ElasticsearchClient client,
             string id, string typeName, string indexName = null)
         {
             var url = (indexName ?? client.DefaultIndexName) + "/" + typeName + "/" + id;

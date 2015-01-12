@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using NElasticsearch.Helpers;
 using RestSharp;
 using RestSharp.Deserializers;
 
@@ -84,7 +85,9 @@ namespace NElasticsearch
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new ResourceNotFoundException(url);
 
-            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
+            if (response.StatusCode != HttpStatusCode.OK
+                && response.StatusCode != HttpStatusCode.Accepted
+                && response.StatusCode != HttpStatusCode.Created)
                 throw ElasticsearchException.CreateFromResponseBody(response.Content);
 
             return response.Data;
@@ -112,7 +115,9 @@ namespace NElasticsearch
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new ResourceNotFoundException(url);
 
-            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Accepted)
+            if (response.StatusCode != HttpStatusCode.OK
+                && response.StatusCode != HttpStatusCode.Accepted
+                && response.StatusCode != HttpStatusCode.Created)
                 throw ElasticsearchException.CreateFromResponseBody(response.Content);
 
             return response.Content;
@@ -122,37 +127,35 @@ namespace NElasticsearch
         {
             while (true)
             {
-                var taskSource = new TaskCompletionSource<IRestResponse>();
                 var endpoint = _clientsPool.GetEndpoint();
-                endpoint.RestClient.ExecuteAsync(request, (restResponse, handle) => taskSource.SetResult(restResponse));
-                var rsp = await taskSource.Task;
-                if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
+                using (new DisposableAction(() => _clientsPool.ReleaseEndpoint(endpoint)))
                 {
-                    endpoint.MarkFailure();
-                    _clientsPool.ReleaseEndpoint(endpoint);
-                    continue;
+                    var rsp = await endpoint.RestClient.ExecuteTaskAsync(request);
+                    if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
+                    {
+                        endpoint.MarkFailure();
+                        continue;
+                    }
+                    return rsp;
                 }
-                _clientsPool.ReleaseEndpoint(endpoint);
-                return rsp;
             }
         }
 
         private async Task<IRestResponse<T>> Execute<T>(IRestRequest request) where T : new()
         {
             while (true)
-            {
-                var taskSource = new TaskCompletionSource<IRestResponse<T>>();
+            {                
                 var endpoint = _clientsPool.GetEndpoint();
-                endpoint.RestClient.ExecuteAsync<T>(request, (restResponse, handle) => taskSource.SetResult(restResponse));
-                var rsp = await taskSource.Task;
-                if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
-                {
-                    endpoint.MarkFailure();
-                    _clientsPool.ReleaseEndpoint(endpoint);
-                    continue;
+                using (new DisposableAction(() => _clientsPool.ReleaseEndpoint(endpoint)))
+                {                   
+                    var rsp = await endpoint.RestClient.ExecuteTaskAsync<T>(request);
+                    if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
+                    {
+                        endpoint.MarkFailure();
+                        continue;
+                    }
+                    return rsp;   
                 }
-                _clientsPool.ReleaseEndpoint(endpoint);
-                return rsp;
             }
         }
 

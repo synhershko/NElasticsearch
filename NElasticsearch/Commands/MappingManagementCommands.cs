@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using NElasticsearch.Mapping;
 
 namespace NElasticsearch.Commands
@@ -8,12 +9,12 @@ namespace NElasticsearch.Commands
     /// </summary>
     public static class MappingManagementCommands
     {
-        public static void PutMappingFor<T>(this ElasticsearchClient client, string indexName)
+        public static async Task PutMappingFor<T>(this ElasticsearchClient client, string indexName)
         {
-            PutMappingFor<T>(client, new[] { indexName });
+            await PutMappingFor<T>(client, new[] { indexName });
         }
 
-        public static void PutMappingFor<T>(this ElasticsearchClient client, string[] indexNames)
+        public static async Task PutMappingFor<T>(this ElasticsearchClient client, string[] indexNames)
         {
             var typeName = TypeMappingWriter.GetMappingTypeNameFor<T>();
 
@@ -21,17 +22,17 @@ namespace NElasticsearch.Commands
             var sb = new StringBuilder();
             if (TypeMappingWriter.GetMappingFor<T>(sb, typeName))
             {
-                PutMapping(client, indexNames, typeName, sb.ToString());
+                await PutMapping(client, indexNames, typeName, sb.ToString());
             }
         }
 
-        public static void PutMapping(this ElasticsearchClient client,
+        public static async Task PutMapping(this ElasticsearchClient client,
             string indexName, string typeName, object mapping)
         {
-            PutMapping(client, new[] {indexName}, typeName, mapping);
+            await PutMapping(client, new[] {indexName}, typeName, mapping);
         }
 
-        public static async void PutMapping(this ElasticsearchClient client,
+        public static async Task PutMapping(this ElasticsearchClient client,
             string[] indexNames, string typeName, object mapping)
         {
             var sb = new StringBuilder();
@@ -53,7 +54,7 @@ namespace NElasticsearch.Commands
         // TODO Get mapping API
         // TODO Get Field Mapping API
 
-        public static async void DeleteMapping(this ElasticsearchClient client,
+        public static async Task DeleteMapping(this ElasticsearchClient client,
             string indexName, string typeName)
         {
             await client.Execute(RestMethod.DELETE, indexName + "/" + typeName + "/_mapping");
