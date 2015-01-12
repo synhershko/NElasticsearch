@@ -20,7 +20,7 @@ namespace NElasticsearch.Commands
             T obj, string id, string typeName, string indexName = null)
         {
             var url = (indexName ?? client.DefaultIndexName) + "/" + typeName + (!string.IsNullOrWhiteSpace(id) ? "/" + id : string.Empty);
-            await client.Execute(RestMethod.POST, url, obj);
+            await client.Execute(string.IsNullOrWhiteSpace(id) ? RestMethod.POST : RestMethod.PUT, url, obj);
         }
 
         public static async Task Delete(this ElasticsearchClient client,
