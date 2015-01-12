@@ -15,30 +15,34 @@ namespace NElasticsearch
 
         public ElasticsearchRestClient(params string[] elasticsearchUrls)
             : this(elasticsearchUrls.Select(x => new Uri(x)).ToArray())
-        {
-            
+        {  
         }
 
         public ElasticsearchRestClient(params Uri[] elasticsearchUrls)
         {
+            MaxConcurrentConnections = 10;
+
             foreach (var elasticsearchUrl in elasticsearchUrls)
             {
-                var internalClient = new RestClient(elasticsearchUrl.ToString())
+                for (var i = 0; i < MaxConcurrentConnections; i++)
                 {
-                    Authenticator = Authenticator,
-                    CookieContainer = CookieContainer,
-                    Proxy = Proxy,
-                    UserAgent = UserAgent,
-                    UseSynchronizationContext = UseSynchronizationContext,
-                    Timeout = Timeout,
-                    ClientCertificates = ClientCertificates,
-                };
-                internalClient.ClearHandlers();
-                internalClient.AddHandler("application/json", new JsonDeserializer());
-                internalClient.AddHandler("text/json", new JsonDeserializer());
-                internalClient.AddHandler("text/x-json", new JsonDeserializer());
-                internalClient.AddHandler("*", new JsonDeserializer());
-                _clientsPool.Add(internalClient);
+                    var internalClient = new RestClient(elasticsearchUrl.ToString())
+                    {
+                        Authenticator = Authenticator,
+                        CookieContainer = CookieContainer,
+                        Proxy = Proxy,
+                        UserAgent = UserAgent,
+                        UseSynchronizationContext = UseSynchronizationContext,
+                        Timeout = Timeout,
+                        ClientCertificates = ClientCertificates,
+                    };
+                    internalClient.ClearHandlers();
+                    internalClient.AddHandler("application/json", new JsonDeserializer());
+                    internalClient.AddHandler("text/json", new JsonDeserializer());
+                    internalClient.AddHandler("text/x-json", new JsonDeserializer());
+                    internalClient.AddHandler("*", new JsonDeserializer());
+                    _clientsPool.Add(internalClient);
+                }
             }            
         }
 
@@ -130,6 +134,7 @@ namespace NElasticsearch
                 var endpoint = _clientsPool.GetEndpoint();
                 using (new DisposableAction(() => _clientsPool.ReleaseEndpoint(endpoint)))
                 {
+                    // TODO propogate exceptions properly
                     var rsp = await endpoint.RestClient.ExecuteTaskAsync(request);
                     if (rsp.StatusCode == 0 && rsp.ErrorException is WebException)
                     {
@@ -159,6 +164,7 @@ namespace NElasticsearch
             }
         }
 
+        public int MaxConcurrentConnections { get; set; }
         public CookieContainer CookieContainer { get; set; }
         public string UserAgent { get; set; }
         public int Timeout { get; set; }

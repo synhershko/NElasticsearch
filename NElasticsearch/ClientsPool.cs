@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace NElasticsearch
 {
@@ -83,7 +84,8 @@ namespace NElasticsearch
 
         public void ReleaseEndpoint(ElasticsearchEndpoint endpoint)
         {
-            _clients.Enqueue(endpoint);
+            if (_clients.Contains(endpoint))
+                _clients.Enqueue(endpoint);
         }
     }
 }
